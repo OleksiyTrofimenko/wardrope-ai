@@ -1,0 +1,9 @@
+config:
+  default: true
+  MD013: false      # line length — prose and tables
+  MD033: false      # inline HTML in PR template
+  MD041: false      # first line heading
+  MD024: false      # duplicate headings across ADR sections
+ignores:
+  - node_modules
+  - "**/.venv/**"
