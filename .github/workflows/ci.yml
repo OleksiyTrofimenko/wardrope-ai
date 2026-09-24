@@ -1,0 +1,62 @@
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  hygiene:
+    name: hygiene (secrets, formatting, docs)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Secret scan
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: EditorConfig check
+        uses: editorconfig-checker/action-editorconfig-checker@v2
+
+      - name: Markdown lint
+        uses: DavidAnson/markdownlint-cli2-action@v16
+        with:
+          globs: |
+            **/*.md
+            !node_modules
+
+      - name: PR size guard (≤ 400 changed lines)
+        if: github.event_name == 'pull_request'
+        run: |
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          lines=$(git diff --shortstat "$base" "$head" -- . ':(exclude)pnpm-lock.yaml' ':(exclude)uv.lock' ':(exclude)go.sum' ':(exclude)packages/contracts/generated/**' \
+            | awk '{ins=0;del=0; for(i=1;i<=NF;i++){ if($(i+1) ~ /insertion/) ins=$i; if($(i+1) ~ /deletion/) del=$i } print ins+del}')
+          lines=${lines:-0}
+          echo "changed lines: $lines"
+          if [ "$lines" -gt 400 ]; then
+            echo "::error::PR changes $lines lines (> 400). Split it — see CLAUDE.md."
+            exit 1
+          fi
+
+      - name: Conventional commit title
+        if: github.event_name == 'pull_request'
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+        run: |
+          echo "$TITLE" | grep -Eq '^(feat|fix|chore|docs|refactor|test|perf|ci|build|infra)(\([a-z0-9-]+\))?!?: .+' \
+            || { echo "::error::PR title must follow Conventional Commits, e.g. 'feat(core-api): add finalize-upload'"; exit 1; }
+
+  # Per-area jobs (web, core-api, media-worker, infra) are added in E1-4 with path filters.
+  # Keep this file the single entry point; each area job must be listed as a required check.
