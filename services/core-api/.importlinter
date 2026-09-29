@@ -1,0 +1,38 @@
+[importlinter]
+root_package = capsule_core
+include_external_packages = True
+
+[importlinter:contract:layers]
+name = Layers: api -> services -> repositories -> models (no reverse edges)
+type = layers
+layers =
+    capsule_core.api
+    capsule_core.services
+    capsule_core.repositories
+    capsule_core.models
+
+[importlinter:contract:no-skip-layers]
+name = No skip-level imports (api -/-> repositories/models, services -/-> models)
+type = forbidden
+source_modules =
+    capsule_core.api
+forbidden_modules =
+    capsule_core.repositories
+    capsule_core.models
+
+[importlinter:contract:services-no-models]
+name = services does not import models directly
+type = forbidden
+source_modules =
+    capsule_core.services
+forbidden_modules =
+    capsule_core.models
+
+[importlinter:contract:models-no-web]
+name = models imports no web framework
+type = forbidden
+source_modules =
+    capsule_core.models
+forbidden_modules =
+    fastapi
+    starlette

@@ -1,5 +1,8 @@
 # Dependencies are the list from docs/specs/foundation/E3-1-core-api-skeleton.md §2.
-# Added by the test PR (PR-A) so the suite is runnable; the implementer (PR-B) owns packaging.
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
 [project]
 name = "capsule-core"
 version = "0.1.0"
@@ -11,11 +14,15 @@ dependencies = [
 ]
 
 [dependency-groups]
-dev = ["pytest", "pytest-asyncio", "httpx", "ruff", "mypy", "import-linter", "testcontainers[postgres]"]
+dev = [
+  "pytest", "pytest-asyncio", "pytest-cov", "httpx", "ruff", "mypy", "import-linter", "testcontainers[postgres]",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/capsule_core"]
 
 [tool.uv]
-# PR-B decides on a build backend; until src/ exists the project is not installed.
-package = false
+package = true
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -36,3 +43,11 @@ select = ["E", "F", "I", "B", "UP"]
 strict = true
 mypy_path = ["src", "tests"]
 explicit_package_bases = true
+
+[tool.coverage.run]
+source = ["capsule_core"]
+concurrency = ["greenlet", "thread"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
