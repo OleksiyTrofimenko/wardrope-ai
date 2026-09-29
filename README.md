@@ -22,7 +22,7 @@ make lint
 
 ## Layout
 
-```
+```text
 apps/web                Next.js 15 (TypeScript)
 services/core-api       FastAPI — schema owner, marketplace domain
 services/ai-service     FastAPI + LangGraph — tagging, looks, stylist (Phase 2)

@@ -23,7 +23,7 @@ Naming: `capsule_<service>_<subject>_<unit>`; labels kept low-cardinality (`rout
 | `capsule_media_worker_process_duration_seconds` | histogram | media-worker |
 | `capsule_sqs_message_age_seconds{queue}` | gauge | consumers |
 | `capsule_core_api_db_pool_in_use` | gauge | core-api |
-| `capsule_ai_llm_tokens_total{feature,model,kind=prompt | completion | cached}` | counter | ai-service (Phase 2) |
+| `capsule_ai_llm_tokens_total{feature,model,kind=prompt\|completion\|cached}` | counter | ai-service (Phase 2) |
 | `capsule_ai_llm_cost_usd_total{feature,model}` | counter | ai-service (Phase 2) |
 | `capsule_ai_quota_rejections_total{feature}` | counter | ai-service (Phase 3) |
 
