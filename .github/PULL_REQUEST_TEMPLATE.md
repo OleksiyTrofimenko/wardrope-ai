@@ -3,20 +3,25 @@
 Spec: `docs/specs/<epic>/<feature>.md` · Task: E?-? · Role: implementer | test-engineer | sre
 
 ## Acceptance criteria → tests
+
 | AC | Test |
 |---|---|
 | AC-1 | `test_AC1_…` |
 
 ## What I deliberately did NOT do
+
 -
 
 ## How to verify manually
+
 1.
 
 ## Risks
+
 -
 
 ## Definition of Done
+
 - [ ] All ACs above have passing tests; no existing test assertion weakened or removed
 - [ ] Lint, typecheck, tests, CI green
 - [ ] Structured logs with `trace_id`; no secrets/PII in logs

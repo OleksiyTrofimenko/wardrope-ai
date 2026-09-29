@@ -1,12 +1,15 @@
 # Spec: core-api skeleton
+
 - Epic: foundation · Status: approved · Phase: 1 · Related: ADR-0003, ADR-0005
 
 ## 1. Goal
+
 A FastAPI service with the cross-cutting concerns every later feature relies on: typed settings, structured
 JSON logging with trace ids, RFC 7807 error responses, health/readiness, OpenTelemetry instrumentation,
 and the layered package layout that `import-linter` enforces. No domain code.
 
 ## 2. Contract
+
 Package `services/core-api/src/capsule_core/` with `main.py` (app factory `create_app()`), `settings.py`
 (pydantic-settings, reads env, fails fast on missing required vars), `logging.py` (structlog JSON, binds
 `trace_id`, `span_id`, `request_id`, `service`, `env`, `version`), `errors.py` (exception handlers →
@@ -23,6 +26,7 @@ opentelemetry-{api,sdk,instrumentation-fastapi,instrumentation-sqlalchemy,export
 pytest-asyncio, httpx, ruff, mypy (strict), import-linter, testcontainers[postgres].
 
 ## 4. Acceptance criteria
+
 - AC-1: `GET /healthz` returns 200 with `status` and `version` and does not touch the database.
 - AC-2: `GET /readyz` returns 200 when Postgres is reachable and 503 `application/problem+json` when it is not.
 - AC-3: An unknown route returns 404 as problem details with a `trace_id` field.
@@ -35,9 +39,11 @@ pytest-asyncio, httpx, ruff, mypy (strict), import-linter, testcontainers[postgr
 - AC-10: `uv run pytest` green, `ruff`, `mypy --strict` clean, coverage ≥ 80 %.
 
 ## 5. NFR
+
 - `/healthz` p95 < 5 ms locally. Logs: `http.request`, `app.startup`, `app.shutdown`. Metrics: FastAPI instrumentation provides
   `http.server.request.duration`; the mapping to `capsule_core_api_*` names happens in the exporter config (E7-1).
 - Security: no debug mode outside `ENV=local`; docs UI only in local.
 
-## 6. Out of scope — Alembic, any table, auth, Dockerfile (E1-4 adds it), business endpoints.
-## 7. Task split — PR-A: tests from spec (test-engineer, branch `test/E3-1`). PR-B: implementation (implementer), rebased on PR-A. ≤ 400 lines each.
+## 6. Out of scope — Alembic, any table, auth, Dockerfile (E1-4 adds it), business endpoints
+
+## 7. Task split — PR-A: tests from spec (test-engineer, branch `test/E3-1`). PR-B: implementation (implementer), rebased on PR-A. ≤ 400 lines each

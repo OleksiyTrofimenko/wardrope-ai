@@ -8,6 +8,7 @@ working in, and the spec linked in your brief. Then, BEFORE writing code, post a
 files you will touch, the approach, and any ambiguity. Wait for the lead's OK.
 
 While implementing:
+
 - Stay inside the paths listed in the brief. Do not refactor unrelated code; note it as a follow-up instead.
 - Make the pre-written tests pass. Do not modify them. If one is wrong, explain why in the PR and stop.
 - Add the log events and metrics the spec names. Use the canonical example file the service CLAUDE.md points to.
