@@ -25,8 +25,9 @@ Naming and required signals per feature are defined in `docs/observability.md`.
 
 ## Consequences
 
-- Vendor-neutral instrumentation. + Product numbers are queryable with SQL from Day 6.
-− Three UIs (CloudWatch, PostHog, Langfuse) until consolidated.
+- Positive: Vendor-neutral instrumentation.
+- Positive: Product numbers are queryable with SQL from Day 6.
+- Negative: Three UIs (CloudWatch, PostHog, Langfuse) until consolidated.
 
 ## How we would know this was wrong
 

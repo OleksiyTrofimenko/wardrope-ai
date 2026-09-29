@@ -22,8 +22,9 @@ upserts `users`. All authz decisions use our own `users.id`, never Clerk ids, so
 
 ## Consequences
 
-- Auth done on Day 1. + Provider isolated behind one dependency per service.
-− Vendor lock at the edge; migration would need a user export + re-login.
+- Positive: Auth done on Day 1.
+- Positive: Provider isolated behind one dependency per service.
+- Negative: Vendor lock at the edge; migration would need a user export + re-login.
 
 ## How we would know this was wrong
 

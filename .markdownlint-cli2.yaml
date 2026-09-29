@@ -4,7 +4,7 @@ config:
   MD033: false      # inline HTML in PR template
   MD041: false      # first line heading
   MD024: false      # duplicate headings across ADR sections
-  MD060: false    # first line in file should be a top-level heading
+  MD060: false      # table column style — aligned vs compact pipes
 ignores:
   - node_modules
   - "**/.venv/**"

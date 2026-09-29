@@ -23,8 +23,10 @@ Monorepo `wardrobe-ai` with `apps/`, `services/`, `packages/`, `infra/`, `docs/`
 
 ## Consequences
 
-- Agents read specs, contracts and consumers in one place. + One PR can change a contract and both sides.
-− CI config is more complex. − Repo size grows; enforce ≤ 400-line PRs and no binaries (golden images go to S3/LFS).
+- Positive: Agents read specs, contracts and consumers in one place.
+- Positive: One PR can change a contract and both sides.
+- Negative: CI config is more complex.
+- Negative: Repo size grows; enforce ≤ 400-line PRs and no binaries (golden images go to S3/LFS).
 
 ## How we would know this was wrong
 
