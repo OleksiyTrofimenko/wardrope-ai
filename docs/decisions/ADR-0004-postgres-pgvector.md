@@ -23,8 +23,8 @@ never as a source of truth. Embedding width fixed at 1024 (Bedrock Titan) in ADR
 
 ## Consequences
 
-- One backup, one migration tool (Alembic in core-api), joins between listings and vectors.
-− Must watch index build times and `work_mem`; vector columns make rows wide — keep them in `items` but exclude from hot list queries.
+- Positive: One backup, one migration tool (Alembic in core-api), joins between listings and vectors.
+- Negative: Must watch index build times and `work_mem`; vector columns make rows wide — keep them in `items` but exclude from hot list queries.
 
 ## How we would know this was wrong
 

@@ -24,8 +24,9 @@ fan-out and rate limiting. Services talk via SQS (async) and HTTP through genera
 
 ## Consequences
 
-- Independent scaling and deploys; AI failures isolated. + Go usage is real but bounded.
-− Four deployables to observe; contracts must be versioned; local dev needs docker-compose for all.
+- Positive: Independent scaling and deploys; AI failures isolated.
+- Positive: Go usage is real but bounded.
+- Negative: Four deployables to observe; contracts must be versioned; local dev needs docker-compose for all.
 
 ## How we would know this was wrong
 
