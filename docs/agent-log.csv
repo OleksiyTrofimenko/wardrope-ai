@@ -1,1 +1,2 @@
 date,pr,task,role,model,first_pass_ci,blocking_findings,major_findings,rework_cycles,spec_deviation,test_tampering,escaped_defects,lead_time_h,human_review_min,tokens_or_cost,notes
+2026-09-29,,E3-1 PR-A tests from spec,test-engineer,claude-opus-5-5,,,,,,,,,,,"split: test/E3-1-a (harness + AC-1..AC-5, 345 lines) then test/E3-1 (AC-6..AC-9, 147 lines)"
