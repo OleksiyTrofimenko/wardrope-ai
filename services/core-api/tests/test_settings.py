@@ -1,5 +1,6 @@
 """AC-9 fail-fast settings, §5 security NFR (spec: docs/specs/foundation/E3-1-core-api-skeleton.md)."""
 
+import re
 from pathlib import Path
 
 import httpx
@@ -17,6 +18,14 @@ def test_AC9_missing_database_url_fails_startup_naming_the_setting(tmp_path: Pat
     result = run_child(tmp_path, env, "/healthz")
     assert result.returncode != 0
     assert "DATABASE_URL" in (result.stdout + result.stderr).upper()
+
+
+def test_AC9_missing_env_fails_startup_naming_the_setting(tmp_path: Path, child_env: dict[str, str]) -> None:
+    env = {k: v for k, v in child_env.items() if k != "ENV"}
+    result = run_child(tmp_path, env, "/healthz")
+    assert result.returncode != 0
+    # Word-boundary match: a bare substring check would also hit ".venv" / "environ" in any traceback.
+    assert re.search(r"\bENV\b", (result.stdout + result.stderr).upper())
 
 
 @pytest.mark.parametrize("path", ["/docs", "/redoc"])
