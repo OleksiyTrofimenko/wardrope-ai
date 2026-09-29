@@ -11,14 +11,21 @@ photos and composes looks from your wardrobe and other members' items.
 - Nothing merges without tests, review, green CI and the lead's approval (`CODEOWNERS`).
 - Numbers over vibes: `docs/observability.md` defines what every feature must emit.
 
-## Local development (target state after E1)
+## Local development
+
+Prerequisites (pinned in the repo): Node 22 (`.nvmrc`), pnpm 9 via `corepack enable` (`package.json`
+`packageManager`), Python 3.12 (`.python-version`) with `uv`, Go 1.23, Docker.
 
 ```bash
 cp .env.example .env
-make up          # postgres+pgvector, redis, localstack
-make test
-make lint
+make help                  # every target with a one-line description
+make up                    # postgres+pgvector, redis, localstack
+make lint typecheck test   # per area: apps/web, services/core-api, services/media-worker
 ```
+
+Areas that do not exist yet are skipped with a notice; the first failing command stops the run.
+From a subdirectory, run `make -C <repo-root> <target>` (or `make -f <repo-root>/Makefile <target>`).
+Self-test for the Makefile: `scripts/test-make.sh`.
 
 ## Layout
 
