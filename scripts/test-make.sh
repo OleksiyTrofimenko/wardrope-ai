@@ -16,6 +16,7 @@ failures=0
 
 # stub <tool> <exit code>: fake tool that logs "<cwd>|<tool> <args>" and exits with <exit code>.
 stub() {
+  # shellcheck disable=SC2016 # $PWD and $* must stay literal: the stub expands them when it runs.
   printf '#!/usr/bin/env bash\necho "$PWD|%s $*" >> "%s"\nexit %s\n' "$1" "$calls" "$2" > "$bin/$1"
   chmod +x "$bin/$1"
 }
@@ -49,6 +50,13 @@ test_AC1_empty_repo_lint_typecheck_test_exit_0() {
   check "AC-1 prints skip notices for every area" has "$out" "skip: media-worker (no services/media-worker/go.mod)"
   check "AC-1 invokes no toolchain" test ! -s "$calls"
   check "AC-1 NFR completes in < 5 s" test "$SECONDS" -lt 5
+
+  # Same verbs on the real repo root: exercises its scripts/ (shellcheck, when installed), not just the fixture.
+  run out rc make -C "$repo_root" lint typecheck test
+  check "AC-1 real repo root: make lint typecheck test exits 0" test "$rc" -eq 0
+  if command -v shellcheck >/dev/null 2>&1; then
+    check "AC-1 real repo root: shellcheck ran on scripts/" has "$out" "==> shellcheck scripts/*.sh"
+  fi
 }
 
 test_AC2_present_area_runs_and_exit_code_propagates() {
@@ -67,6 +75,11 @@ test_AC2_present_area_runs_and_exit_code_propagates() {
   check "AC-2 failing area: exit code 7 is reported" has "$out" "Error 7"
   check "AC-2 fail fast: later area (media-worker) not run" test "$(grep -c '|go ' "$calls" || true)" -eq 0
   stub uv 0
+
+  : > "$calls"
+  run out rc make -C "$repo" test-media-worker
+  check "AC-2 sub-target test-media-worker exits 0" test "$rc" -eq 0
+  check "AC-2 sub-target runs only its own area" test "$(cat "$calls")" = "$repo/services/media-worker|go test ./..."
 }
 
 test_AC3_help_lists_every_target_with_description() {
