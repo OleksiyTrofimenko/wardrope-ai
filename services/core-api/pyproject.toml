@@ -1,0 +1,38 @@
+# Dependencies are the list from docs/specs/foundation/E3-1-core-api-skeleton.md §2.
+# Added by the test PR (PR-A) so the suite is runnable; the implementer (PR-B) owns packaging.
+[project]
+name = "capsule-core"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+  "fastapi", "uvicorn", "pydantic-settings", "sqlalchemy[asyncio]", "asyncpg", "structlog",
+  "opentelemetry-api", "opentelemetry-sdk", "opentelemetry-instrumentation-fastapi",
+  "opentelemetry-instrumentation-sqlalchemy", "opentelemetry-exporter-otlp",
+]
+
+[dependency-groups]
+dev = ["pytest", "pytest-asyncio", "httpx", "ruff", "mypy", "import-linter", "testcontainers[postgres]"]
+
+[tool.uv]
+# PR-B decides on a build backend; until src/ exists the project is not installed.
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = "-ra --strict-markers"
+markers = ["integration: needs Docker (testcontainers); skipped when Docker is unreachable"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.mypy]
+strict = true
+mypy_path = ["src", "tests"]
+explicit_package_bases = true
