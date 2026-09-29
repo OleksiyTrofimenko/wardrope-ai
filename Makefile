@@ -3,7 +3,7 @@
 # file exists; absent areas are skipped with a notice. Each verb depends on one sub-target per area
 # (test -> test-web test-core-api test-media-worker); the first failing command stops the run.
 # From a subdirectory: `make -C <repo-root> <target>` or `make -f <repo-root>/Makefile <target>`.
-.PHONY: help up down test lint typecheck e2e seed fmt \
+.PHONY: help up down smoke-local test lint typecheck e2e seed fmt \
 	test-web test-core-api test-media-worker lint-web lint-core-api lint-media-worker \
 	typecheck-web typecheck-core-api typecheck-media-worker fmt-web fmt-core-api fmt-media-worker
 .DEFAULT_GOAL := help
@@ -25,11 +25,17 @@ area = @if [ -f "$(MAKEFILE_DIR)$(2)" ]; then \
 help:      ## list every target with a one-line description
 	@awk 'BEGIN {FS = ":.*## "} /^[a-z][a-z0-9_-]*:.*## / {printf "  %-24s %s\n", $$1, $$2}' "$(MAKEFILE_DIR)Makefile"
 
-up:        ## start local stack (postgres+pgvector, redis, localstack)
-	docker compose up -d
+# Local stack (spec: docs/specs/foundation/E1-2-local-stack.md; runbook: docs/runbooks/local-stack.md).
+COMPOSE := docker compose -f "$(MAKEFILE_DIR)docker-compose.yml"
 
-down:      ## stop local stack and delete its volumes
-	docker compose down -v
+up:        ## start local stack (postgres+pgvector, redis, localstack); returns once all are healthy
+	$(COMPOSE) up -d --wait --wait-timeout 120
+
+down:      ## stop local stack and delete its containers and volumes
+	$(COMPOSE) down -v --remove-orphans
+
+smoke-local: ## check the running local stack (pgvector, SQS queues, S3 bucket)
+	"$(MAKEFILE_DIR)scripts/smoke-local.sh"
 
 test: test-web test-core-api test-media-worker ## run unit/integration tests in every present area
 test-web:                ## run web tests (pnpm)

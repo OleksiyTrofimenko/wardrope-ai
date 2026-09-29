@@ -1,2 +1,65 @@
-# Filled in by E1-2. Kept here so `make up` has a target from Day 0.
-services: {}
+# Local stack. Spec: docs/specs/foundation/E1-2-local-stack.md · Runbook: docs/runbooks/local-stack.md
+# One shared stack per machine (project name `capsule`): every worktree talks to the same containers.
+# Credentials below are local-only defaults, mirrored in .env.example; they are not secrets.
+# Host ports default to 5432/6379/4566. They are overridable (POSTGRES_PORT / REDIS_PORT / LOCALSTACK_PORT)
+# because a host-installed postgres/redis (e.g. Homebrew) often already holds the default port.
+name: capsule
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_DB: capsule
+      POSTGRES_USER: capsule
+      POSTGRES_PASSWORD: capsule
+    ports:
+      - "127.0.0.1:${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U capsule -d capsule"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "127.0.0.1:${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  localstack:
+    # Last 4.x community tag; runs S3 + SQS without an auth token.
+    image: localstack/localstack:4.14.0
+    environment:
+      SERVICES: s3,sqs
+      AWS_DEFAULT_REGION: eu-west-1
+      EAGER_SERVICE_LOADING: "1"
+      # Without these two, queue URLs come back as http://localhost.localstack.cloud:4566/...; with them they are
+      # http://localhost:4566/000000000000/<name>, matching SQS_IMAGE_INGEST_URL in .env.example.
+      SQS_ENDPOINT_STRATEGY: "off"
+      LOCALSTACK_HOST: localhost:4566
+    ports:
+      - "127.0.0.1:${LOCALSTACK_PORT:-4566}:4566"
+    volumes:
+      - ./infra/local/localstack-init.sh:/etc/localstack/init/ready.d/10-capsule-init.sh:ro
+    # Healthy only once the ready.d init script has finished without errors.
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - >-
+          curl -sf http://localhost:4566/_localstack/init/ready > /tmp/init.json &&
+          grep -q '"completed": *true' /tmp/init.json &&
+          ! grep -q '"state": *"ERROR"' /tmp/init.json
+      interval: 2s
+      timeout: 3s
+      retries: 45
+      start_period: 5s
+
+volumes:
+  postgres-data:
