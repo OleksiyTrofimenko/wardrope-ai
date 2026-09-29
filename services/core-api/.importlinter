@@ -19,6 +19,8 @@ source_modules =
 forbidden_modules =
     capsule_core.repositories
     capsule_core.models
+# Only direct skip-level edges are forbidden; the one-hop chain api -> services -> repositories -> models is legal.
+allow_indirect_imports = True
 
 [importlinter:contract:services-no-models]
 name = services does not import models directly
@@ -27,6 +29,7 @@ source_modules =
     capsule_core.services
 forbidden_modules =
     capsule_core.models
+allow_indirect_imports = True
 
 [importlinter:contract:models-no-web]
 name = models imports no web framework

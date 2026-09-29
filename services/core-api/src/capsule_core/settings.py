@@ -3,7 +3,7 @@
 from importlib.metadata import PackageNotFoundError, version
 from typing import Literal
 
-from pydantic import Field, ValidationError
+from pydantic import Field, SecretStr, ValidationError
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -21,9 +21,9 @@ class SettingsError(RuntimeError):
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(case_sensitive=False, extra="ignore")
 
-    env: Literal["local", "test", "dev", "staging", "prod"] = "local"
+    env: Literal["local", "test", "dev", "staging", "prod"]
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"] = "INFO"
-    database_url: str
+    database_url: SecretStr
     service_name: str = "core-api"
     service_version: str = Field(default_factory=_package_version)
     otel_exporter_otlp_endpoint: str | None = None

@@ -2,7 +2,7 @@
 
 from collections.abc import Mapping
 from http import HTTPStatus
-from typing import Any
+from typing import Any, cast
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -27,13 +27,13 @@ def problem(
     title = HTTPStatus(status).phrase
     trace_id, _ = current_trace_ids()
     body = {
+        **extensions,  # first, so an extension can never overwrite a core RFC 7807 field
         "type": type_,
         "title": title,
         "status": status,
         "detail": detail if detail is not None else title,
         "instance": instance,
         "trace_id": trace_id,
-        **extensions,
     }
     return JSONResponse(body, status_code=status, headers=headers, media_type=PROBLEM_CONTENT_TYPE)
 
@@ -43,15 +43,17 @@ def internal_error(instance: str) -> JSONResponse:
 
 
 async def _http_exception(request: Request, exc: Exception) -> JSONResponse:
-    assert isinstance(exc, StarletteHTTPException)
-    return problem(exc.status_code, instance=request.url.path, detail=str(exc.detail), headers=exc.headers)
+    http_exc = cast(StarletteHTTPException, exc)
+    return problem(
+        http_exc.status_code, instance=request.url.path, detail=str(http_exc.detail), headers=http_exc.headers
+    )
 
 
 async def _validation_error(request: Request, exc: Exception) -> JSONResponse:
-    assert isinstance(exc, RequestValidationError)
+    validation_exc = cast(RequestValidationError, exc)
     errors = [
         {"field": ".".join(str(part) for part in err.get("loc", ())), "message": str(err.get("msg", "invalid"))}
-        for err in exc.errors()
+        for err in validation_exc.errors()
     ]
     return problem(
         422,

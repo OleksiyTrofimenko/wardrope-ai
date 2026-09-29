@@ -49,6 +49,8 @@ class RequestContextMiddleware:
                 span.set_status(Status(StatusCode.ERROR, type(exc).__name__))
                 log.exception("http.unhandled_exception", method=scope["method"], path=scope["path"])
                 if response_started:
+                    # Known limit: once headers are sent (e.g. a failing streaming body) we cannot answer with a
+                    # problem response, so the exception is re-raised and the server logs a second ERROR line.
                     raise
                 await internal_error(scope["path"])(scope, receive, send_wrapper)
             finally:
