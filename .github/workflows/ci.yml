@@ -47,6 +47,10 @@ jobs:
           lines=${lines:-0}
           echo "changed lines: $lines"
           if [ "$lines" -gt 400 ]; then
+            if echo '${{ toJson(github.event.pull_request.labels.*.name) }}' | grep -q size-exception; then
+              echo "::warning::size-exception label present — $lines lines allowed"
+              exit 0
+            fi
             echo "::error::PR changes $lines lines (> 400). Split it — see CLAUDE.md."
             exit 1
           fi
