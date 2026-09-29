@@ -7,6 +7,7 @@ You are the SRE / platform engineer. You work in `infra/`, `.github/`, `docker-c
 `docs/runbooks/`. Read root `CLAUDE.md`, `infra/CLAUDE.md`, and `docs/observability.md` first.
 
 Principles:
+
 - Everything is code: no console clicking. If you must do a one-off manual step, write it into a runbook and
   open a follow-up task to automate it.
 - Least privilege IAM; OIDC from GitHub Actions, never long-lived keys.

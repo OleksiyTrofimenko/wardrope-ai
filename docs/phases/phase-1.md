@@ -6,6 +6,7 @@
 **Entry:** repo with governance (this Day 0 scaffold) · accounts ready (AWS + budget, SES prod-access requested, Clerk, PostHog).
 
 **Exit criteria (all must be true, written down in §4):**
+
 - Sign up → create item with 3 photos → publish listing → visible in browse, on the dev URL, deployed from CI.
 - Playwright E2E for that journey green in CI; synthetic check running every 10 min.
 - p95 API latency < 300 ms on browse/items under k6 50 rps in dev.
@@ -13,8 +14,9 @@
 - ≥ 15 merged PRs, every one meeting the DoD; agent-log filled; ≥ 3 CLAUDE.md rules added from real mistakes.
 
 ## 1. Epics & tasks
+
 | ID | Task (one PR each) | Role | Depends on | Status |
-|---|---|---|---|---|
+| --- | --- | --- | --- | --- |
 | E1-1 | Monorepo tooling: pnpm workspace, uv, Go module layout, Makefile (`up/test/lint/e2e/seed`) | implementer | — | todo |
 | E1-2 | docker-compose: postgres+pgvector, redis, LocalStack (S3, SQS) with init script | sre | E1-1 | todo |
 | E1-3 | pre-commit + linters (ruff, eslint, gofmt, gitleaks) | implementer | E1-1 | todo |
@@ -48,8 +50,9 @@
 | E8-1 | agent-log filled; Day 7 retro; CLAUDE.md v2 | lead + scribe | all | todo |
 
 ## 2. Day plan
+
 | Day | Focus | Parallel agents |
-|---|---|---|
+| --- | --- | --- |
 | 0 | Governance scaffold, accounts | planner, sre |
 | 1 | E1-*, E3-1, E5-1 | tooling ‖ web |
 | 2 | E2-*, E3-2, E3-3; tests for E3 from spec | planner → core-api ‖ test-engineer |
@@ -60,8 +63,9 @@
 | 7 | E7-3, E7-4, E8-1; retro; Phase 2 planning | scribe, planner |
 
 ## 3. Metrics snapshot (fill on Day 7)
+
 | Metric | Value |
-|---|---|
+| --- | --- |
 | PRs merged | |
 | First-pass CI green rate | |
 | Mean blocking findings / PR | |
@@ -75,6 +79,7 @@
 | AWS cost to date | |
 
 ## 4. Exit review (Day 7)
+
 Decision: go / one more day. Reason:
 Rules added to CLAUDE.md:
 Gates added to CI:
