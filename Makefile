@@ -41,7 +41,7 @@ test: test-web test-core-api test-media-worker ## run unit/integration tests in 
 test-web:                ## run web tests (pnpm)
 	$(call area,web,$(WEB),pnpm run test)
 test-core-api:           ## run core-api tests (uv + pytest)
-	$(call area,core-api,$(CORE_API),uv run --frozen pytest)
+	$(call area,core-api,$(CORE_API),uv run --frozen pytest --cov)
 test-media-worker:       ## run media-worker tests (go test)
 	$(call area,media-worker,$(MEDIA),go test ./...)
 
