@@ -21,12 +21,13 @@ set, else console in local, none in tests; FastAPI + SQLAlchemy instrumentation)
 Packages `api/`, `services/`, `repositories/`, `models/` exist (empty `__init__.py`) with `.importlinter`
 contracts: `api` may import `services`, `services` may import `repositories`, `repositories` may import `models`;
 no reverse edges; `models` imports no FastAPI.
-`pyproject.toml`: fastapi, uvicorn, pydantic-settings, sqlalchemy[asyncio], asyncpg, structlog, hatchling, 
+`pyproject.toml`: fastapi, uvicorn, pydantic-settings, sqlalchemy[asyncio], asyncpg, structlog,
 opentelemetry-{api,sdk,instrumentation-fastapi,instrumentation-sqlalchemy,exporter-otlp}; dev: pytest,
 pytest-asyncio, httpx, ruff, mypy (strict), import-linter, pytest-cov, testcontainers[postgres].
-
+Build backend: `hatchling` (in `[build-system]`, not a runtime dependency).
 
 ## 2.1 Behavioural contract (agreed with the test engineer)
+
 a. `ENV=test` is a valid non-local value; `ENV` is required (no default) and startup fails fast without it.
 b. Logging goes through stdlib `logging`; the app must not replace existing root handlers (no `basicConfig(force=True)`), so `caplog` sees records.
 c. `create_app()` reads the environment on every call, keeps no process-wide settings cache, and is safe to call repeatedly.
@@ -36,8 +37,6 @@ f. Validation errors are listed in `errors[]` with `field` and `message` keys.
 g. The `route` field in the request log is the route template (`/items/{id}`), not the raw path.
 h. The request log line for a 500 is below ERROR level, so AC-5's "exactly one ERROR line" holds.
 i. `.importlinter` lives in `services/core-api/`; layered contracts allow indirect imports (`api → services → repositories`), skip-level direct imports are forbidden, and `models` must not import any web framework (`include_external_packages = True`).
-
-
 
 ## 4. Acceptance criteria
 
@@ -61,6 +60,7 @@ i. `.importlinter` lives in `services/core-api/`; layered contracts allow indire
 ## 6. Out of scope — Alembic, any table, auth, Dockerfile (E1-4 adds it), business endpoints
 
 ## 7. Task split
+
 Tests are written first by the test engineer on branch `test/E3-1` (no PR of their own; they merge with the implementation).
 PR-B1 — skeleton: settings, logging, errors, middleware, app factory, health, DB engine/session, import-linter, packaging. Carries the `size-exception` label because every test needs the whole app.
 PR-B2 — OTLP/console exporters, SQLAlchemy instrumentation, `services/core-api/CLAUDE.md` (~70 lines).
