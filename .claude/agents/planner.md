@@ -10,6 +10,7 @@ Inputs you must read first: root `CLAUDE.md`, `docs/architecture.md`, `docs/deci
 `docs/phases/phase-N.md`, and any existing spec in `docs/specs/` for the same epic.
 
 Your output is a spec at `docs/specs/<epic>/<feature>.md` using `docs/specs/TEMPLATE.md`, containing:
+
 1. Goal and the user story it serves (one paragraph).
 2. API contract: OpenAPI fragment and/or TypeScript types. Field names, validation, error cases.
 3. Data changes: tables/columns/indexes, migration notes, backfill.
